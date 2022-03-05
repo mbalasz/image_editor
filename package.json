@@ -1,0 +1,1 @@
+{"scripts":{"build":"browserify public/script.js -o public/bundle.js","watch":"watchify public/script.js -o public/bundle.js -v"},"dependencies":{"express":"^4.17.3","fabric":"^5.2.1","watchify":"^4.0.0"}}
