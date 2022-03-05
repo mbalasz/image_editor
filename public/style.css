@@ -44,4 +44,18 @@ body {
     margin:0.4em auto;
   }
 }
-  
+
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  height: 100%;
+}
+
+.image {
+  grid-column: 1 / 6;
+}
+
+.edit-section {
+  grid-column: 6;
+}

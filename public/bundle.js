@@ -33147,22 +33147,19 @@ async function handleFiles() {
             imageElement.src = event.target.result;
             imageElement.onload = function () {
                 var imgInstance = new fabric.Image(imageElement, {
-                    left: 100,
-                    top: 100,
-                    width: 100,
-                    height: 100,
-                    angle: 30,
-                    opacity: 0.85
+                    left: 0,
+                    top: 0,
                 });
+                imgInstance.scaleToHeight(canvas.getHeight())
+                imgInstance.scaleToWidth(canvas.getWidth())
                 canvas.add(imgInstance);
             }
         }
         reader.readAsDataURL(file)
     }
 }
-
+showCanvas()
 async function showCanvas() {
-    console.log("shopwing canvas")
     return fetch('canvas.html')
         .then(response => response.text())
         .then(text => document.getElementById('content').innerHTML = text)
@@ -33171,6 +33168,21 @@ async function showCanvas() {
 
 function setUpCanvas() {
     let canvas = new fabric.Canvas('canvas');
+    // create a rectangle object
+var rect = new fabric.Rect({
+    left: 100,
+    top: 100,
+    fill: 'red',
+    width: 20,
+    height: 20
+  });
+  
+    canvas.add(rect)
+    console.log( document.body.clientWidth)
+    const imageSection = document.getElementById('image-section');
+    console.log(imageSection.clientWidth);
+    canvas.setWidth(imageSection.clientWidth);
+    canvas.setHeight(imageSection.clientHeight);
     const saveElemenet = document.getElementById("save")
     saveElemenet.addEventListener("click", () => {
         let dataURL = canvas.toDataURL({
