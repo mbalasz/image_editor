@@ -33114,8 +33114,6 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 },{}],6:[function(require,module,exports){
 const fabric = require("fabric").fabric;
 
-var canvas = new fabric.Canvas('canvas');
-
 var rect = new fabric.Rect({
     top: 100,
     left: 100,
@@ -33124,15 +33122,25 @@ var rect = new fabric.Rect({
     fill: 'red'
 });
 
-canvas.add(rect);
-
-function handleFiles() {
-    const fileList = this.files;
-    for (let i = 0; i < fileList.length; i++) {
-        const file = fileList[i];
-        if (!file.type.startsWith('image/')) {
-            continue
+function containsImages(files) {
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.type.startsWith('image/')) {
+            return true;
         }
+    }
+    return false;
+}
+
+async function handleFiles() {
+    const files = this.files;
+    console.log(files)
+    if (!containsImages(files)) {
+        return;
+    }
+    let canvas = await showCanvas();
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
         const reader = new FileReader();
         reader.onload = (event) => {
             var imageElement = new Image();
@@ -33153,16 +33161,28 @@ function handleFiles() {
     }
 }
 
-const inputElement = document.getElementById("input");
-inputElement.addEventListener("change", handleFiles, false);
+async function showCanvas() {
+    console.log("shopwing canvas")
+    return fetch('canvas.html')
+        .then(response => response.text())
+        .then(text => document.getElementById('content').innerHTML = text)
+        .then(() => setUpCanvas())
+}
 
-const saveElemenet = document.getElementById("save")
-saveElemenet.addEventListener("click", () => {
-    let dataURL = canvas.toDataURL({
-        format: 'png',
+function setUpCanvas() {
+    let canvas = new fabric.Canvas('canvas');
+    const saveElemenet = document.getElementById("save")
+    saveElemenet.addEventListener("click", () => {
+        let dataURL = canvas.toDataURL({
+            format: 'png',
+        })
+        downloadDataUrl(dataURL);
     })
-    downloadDataUrl(dataURL);
-})
+    return canvas;
+}
+
+const inputElement = document.getElementById("file-upload");
+inputElement.addEventListener("change", handleFiles, false);
 
 async function downloadDataUrl(dataUrl) {
     const blob = await fetch(dataUrl).then(response => response.blob())
