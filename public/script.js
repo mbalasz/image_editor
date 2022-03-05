@@ -44,7 +44,7 @@ async function handleFiles() {
         reader.readAsDataURL(file)
     }
 }
-showCanvas()
+// showCanvas();
 async function showCanvas() {
     return fetch('canvas.html')
         .then(response => response.text())
@@ -54,19 +54,7 @@ async function showCanvas() {
 
 function setUpCanvas() {
     let canvas = new fabric.Canvas('canvas');
-    // create a rectangle object
-var rect = new fabric.Rect({
-    left: 100,
-    top: 100,
-    fill: 'red',
-    width: 20,
-    height: 20
-  });
-  
-    canvas.add(rect)
-    console.log( document.body.clientWidth)
     const imageSection = document.getElementById('image-section');
-    console.log(imageSection.clientWidth);
     canvas.setWidth(imageSection.clientWidth);
     canvas.setHeight(imageSection.clientHeight);
     const saveElemenet = document.getElementById("save")
@@ -76,6 +64,14 @@ var rect = new fabric.Rect({
         })
         downloadDataUrl(dataURL);
     })
+    const sideImages = document.getElementsByClassName('side-image')
+    for (let i = 0; i < sideImages.length; i++) {
+        const image = sideImages[i];
+        image.addEventListener('click', (e) => {
+            onWatermarkClicked(e, canvas);
+        })
+    }
+    setUpKeys(canvas)
     return canvas;
 }
 
@@ -85,11 +81,32 @@ inputElement.addEventListener("change", handleFiles, false);
 async function downloadDataUrl(dataUrl) {
     const blob = await fetch(dataUrl).then(response => response.blob())
     const blobUrl = URL.createObjectURL(blob);
-    var link = document.createElement("a"); 
+    var link = document.createElement("a");
     link.href = blobUrl;
     link.download = "aDefaultFileName.png";
-    document.body.appendChild(link); 
+    document.body.appendChild(link);
     link.click();
     URL.revokeObjectURL(blobUrl);
     link.remove();
+}
+
+function onWatermarkClicked(event, canvas) {
+    const element = event.srcElement;
+    const imageInstance = new fabric.Image(element, {
+        top: 0,
+        left: 0
+    })
+    canvas.add(imageInstance);
+}
+
+function setUpKeys(canvas) {
+    document.onkeydown = (e) => {
+        if (e.key === "Backspace" || e.key === "Delete") {
+            console.log(e.key)
+            canvas.getActiveObjects().forEach((obj) => {
+                canvas.remove(obj)
+            });
+            canvas.discardActiveObject().renderAll()
+        }
+    }
 }
