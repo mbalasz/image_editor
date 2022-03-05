@@ -33168,13 +33168,16 @@ async function showCanvas() {
 
 function setUpCanvas() {
     let canvas = new fabric.Canvas('canvas');
+    canvas.preserveObjectStacking = true;
     const imageSection = document.getElementById('image-section');
     canvas.setWidth(imageSection.clientWidth);
     canvas.setHeight(imageSection.clientHeight);
     const saveElemenet = document.getElementById("save")
     saveElemenet.addEventListener("click", () => {
+        canvas.renderAll();
         let dataURL = canvas.toDataURL({
             format: 'png',
+            multiplier: 5,
         })
         downloadDataUrl(dataURL);
     })
@@ -33210,7 +33213,14 @@ function onWatermarkClicked(event, canvas) {
         top: 0,
         left: 0
     })
+    if (imageInstance.height > canvas.getHeight() / 3) {
+        imageInstance.scaleToHeight(canvas.getHeight() / 3)
+    }
+    if (imageInstance.width > canvas.getWidth() / 3) {
+        imageInstance.scaleToWidth(canvas.getWidth() / 3)
+    }
     canvas.add(imageInstance);
+    canvas.bringToFront(imageInstance);
 }
 
 function setUpKeys(canvas) {
